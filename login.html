@@ -1,0 +1,30 @@
+<!doctype html>
+    <html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <title></title>
+    </head>
+    <body>
+      <h1>Login</h1>
+      <button id="login-button" class="btn btn-primary">Sign in with Auth0</button>
+      <button id="logout-button" style="display: none;">Log out</button>
+      <script src="https://cdn.auth0.com/js/auth0/9.14.0/auth0.min.js"></script>
+      <script>
+        var webAuth = new auth0.WebAuth({
+          domain: 'dev-k7faluteobqev1a0.us.auth0.com',
+          clientID: 'WJJFBtnRYl7hXuXADR5uP48Hng1Z9Zdt',
+          redirectUri: 'http://localhost:3000/callback',
+          responseType: 'code',
+          scope: 'openid profile'
+        });
+        document.getElementById('login-button').addEventListener('click', function() {
+          webAuth.authorize();
+        });
+        document.getElementById('logout-button').addEventListener('click', function() {
+          webAuth.logout({
+            returnTo: 'http://localhost:3000/login'
+          });
+        });
+      </script>
+    </body>
+    </html>

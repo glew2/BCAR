@@ -1,0 +1,14 @@
+<!doctype html>
+    <html>
+    <body>
+      <h1>Redirect successful</h1>
+      <a href="views/sample_data.ejs"><button id="test-button">Test</button></a>
+      
+      <button id="logout-button">Log out</button>
+      <script>
+        document.getElementById('logout-button').addEventListener('click', function() {
+          webAuth.logout({
+            returnTo: 'http://localhost:3000/login'
+          });
+        });
+      </script>
