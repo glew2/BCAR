@@ -10,6 +10,65 @@
       <button id="logout-button" style="display: none;">Log out</button>
       <script src="https://cdn.auth0.com/js/auth0/9.14.0/auth0.min.js"></script>
       <script>
+        function getByEmail(email, callback) {
+          const mysql = require('mysql');
+
+          const connection = mysql.createConnection({
+            host: 'soccerdb.calingaiy4id.us-east-2.rds.amazonaws.com',
+            user: 'ale_lew_mus',
+            password: 'QS7FhtcdeLbm',
+            database: 'BCAResearchHub'
+          });
+
+          connection.connect();
+
+          const query = 'SELECT user_id, email FROM users';
+
+          connection.query(query, [ email ], function(err, results) {
+            if (err || results.length === 0) return callback(err || null);
+
+            const user = results[0];
+            callback(null, {
+              user_id: user.id.toString(),
+              nickname: user.nickname,
+              email: user.email
+            });
+          });
+        }
+
+        function create(user, callback) {
+          const mysql = require('mysql');
+          const bcrypt = require('bcrypt');
+
+          const connection = mysql.createConnection({
+            host: 'soccerdb.calingaiy4id.us-east-2.rds.amazonaws.com',
+            user: 'ale_lew_mus',
+            password: 'QS7FhtcdeLbm',
+            database: 'BCAResearchHub'
+          });
+
+          connection.connect();
+
+          const query = "INSERT INTO `users` (`user_id`, `first_name`, `last_name`, `email`, `password`, `account_type`) VALUES (3, 'Emilio', 'Aleman', 'emiale23@bergen.org', 'Password1', 'student')";
+
+          bcrypt.hash(user.password, 10, function(err, hash) {
+            if (err) return callback(err);
+
+            const insert = {
+              password: hash,
+              email: user.email
+            };
+
+            connection.query(query, insert, function(err, results) {
+              if (err) return callback(err);
+              if (results.length === 0) return callback();
+              callback(null);
+            });
+          });
+        }
+
+        getByEmail('matwan@bergen.org');
+
         var webAuth = new auth0.WebAuth({
           domain: 'dev-k7faluteobqev1a0.us.auth0.com',
           clientID: 'WJJFBtnRYl7hXuXADR5uP48Hng1Z9Zdt',
@@ -25,6 +84,7 @@
             returnTo: 'http://localhost:3000/login'
           });
         });
+
       </script>
     </body>
     </html>
