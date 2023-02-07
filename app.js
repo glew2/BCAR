@@ -40,7 +40,7 @@ const pool = mysql.createPool({
 });
 
 app.get('/data_display', (req, res) => {
-  pool.query('SELECT * FROM projects', (error, results) => {
+  pool.query('SELECT * FROM projects JOIN students ON projects.student_id=students.student_id JOIN users ON students.user_id=users.user_id;', (error, results) => {
     if (error) {
       return res.send(error.message);
     }
