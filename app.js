@@ -2,9 +2,42 @@ const express = require('express');
 const auth0 = require('auth0');
 const path = require('path');
 const mysql = require('mysql');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+var indexRouter = require('./routes/index.js');
+const { auth } = require('express-openid-connect');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+require('dotenv').config();
 
-const app = express();
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  secret: process.env.SECRET,
+  baseURL: process.env.BASEURL,
+  clientID: process.env.CLIENTID,
+  issuerBaseURL: process.env.ISSUER
+}
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+      if (!user.verifyPassword(password)) { return done(null, false); }
+      return done(null, user);
+    });
+  }
+));
+
+
+var app = express();
+app.set("views", "views");
+app.set("view engine", "ejs");
+app.use(express.json());
+app.use(express.urlencoded({ extended: true}));
+app.use(express.static("public"));
+app.use(auth(config));
+app.use(passport.initialize());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
@@ -13,11 +46,16 @@ app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'));
 
 app.get('/', (req, res) => {
-    res.redirect('/login');
+    res.redirect(req.oidc.isAuthenticated() ? '/landing' : '/index');
 })
 
-app.get('/login', (req, res) => {
-  res.render('login');
+app.post('/login', passport.authenticate('local', {successRedirect: '/landing', failureRedirect: '/index', failureFlash: true}));
+
+app.get('/index', (req, res) => {
+  const isAuthenticated = req.isAuthenticated();
+  const user = req.user;
+  console.log(user);
+  res.render('index', { isAuthenticated, user });
 });
 
 // app.get('/logout', (req, res) => {
