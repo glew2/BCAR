@@ -11,6 +11,8 @@
       <button id="logout-button" class="btn btn-primary">Log out</button>
       </nav>
 
+      <pre><%= JSON.stringify(user,null,2) %></pre>
+
       <script>
         document.getElementById('test-button').addEventListener('click', ()=> {
           window.location.href='/data_display';

@@ -6,7 +6,7 @@ router.get("/", (req, res) => {
     res.render("index", {
         title: "Index Page",
         isAuthenticated: req.oidc.isAuthenticated(),
-        user: req.oidc.user
+        user: req.oidc.user,
     });
 });
 

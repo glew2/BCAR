@@ -47,15 +47,15 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.get('/', (req, res) => {
     res.redirect(req.oidc.isAuthenticated() ? '/landing' : '/index');
-})
+});
+// change above redirect
 
 app.post('/login', passport.authenticate('local', {successRedirect: '/landing', failureRedirect: '/index', failureFlash: true}));
 
 app.get('/index', (req, res) => {
   const isAuthenticated = req.isAuthenticated();
   const user = req.user;
-  console.log(user);
-  res.render('index', { isAuthenticated, user });
+  res.render('index', { isAuthenticated, user: req.oidc.user });
 });
 
 // app.get('/logout', (req, res) => {
@@ -67,7 +67,7 @@ app.get('/callback', (req, res) => {
 });
 
 app.get('/landing', (req, res) => {
-  res.render('landing');
+  res.render('landing', {user: req.oidc.user});
 });
 
 app.get('/project_upload', (req, res) => {
@@ -110,6 +110,19 @@ app.post('/add_project', (req, res) => {
     }
     res.redirect('/landing');  
   });
+});
+
+app.post('/add_user', (user, res) => {
+  var count;
+  pool.query('SELECT COUNT(*) FROM users', function(err, results) {
+    if (err) throw err;
+    count = results +1;
+  });
+  pool.query('INSERT INTO users (user_id, first_name, last_name, email, account_type) VALUES (?, ?, ?, ?, ?)', [count, req.oidc.user.given_name, req.oidc.user.family_name, req.oidc.user.email, 'student'], (error, results) => {
+    if (error) {
+      return res.status(500).send(error);
+    }
+  })
 });
 
 app.listen(3000, () => {
