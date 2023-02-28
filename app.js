@@ -115,44 +115,43 @@ app.post('/add_project', (req, res) => {
   pool.query('INSERT INTO projects (student_id, title, abstract, research_paper, teacher_id, teacher_email) VALUES (?, ?, ?, ?, ?, ?)', [1, req.body.projectTitle, req.body.Abstract, req.body.researchPaper, 1, req.body.teacherSelection], (error, results) => {
     if (error) {
       return res.status(500).send(error);
-    }
-    console.log("BEFORE LINE 120");
-    pool.query('SELECT MAX(project_id) AS max_project_id FROM projects'), function(err, results) {
-      if (err) throw err;
-      console.log("BEFORE LINE 122;");
-      const max_project = results[0].max_project_id;
-      console.log("MAXIMUM PROJECT: " + max_project);
-      if (!(typeof req.body.tagOptions === undefined)) {
-        // console.log("TYPE OF: " + typeof(req.body.tagOptions));
-        // console.log("TAG OPTIONS: " + req.body.tagOptions);
-        if (typeof req.body.tagOptions == 'string') {
-          pool.query('INSERT INTO tags (tag_name) VALUES (?)', [req.body.tagOptions] , (error, results) => {
+    }  
+  });
+  console.log("BEFORE LINE 120");
+  pool.query('SELECT MAX(project_id) AS max_project_id FROM projects', function(err, results) {
+    console.log("BEFORE LINE 122;");
+    const max_project = results[0].max_project_id;
+    console.log("MAXIMUM PROJECT: " + max_project);
+    if (!(typeof req.body.tagOptions === undefined)) {
+      // console.log("TYPE OF: " + typeof(req.body.tagOptions));
+      // console.log("TAG OPTIONS: " + req.body.tagOptions);
+      if (typeof req.body.tagOptions == 'string') {
+        pool.query('INSERT INTO tags (tag_name) VALUES (?)', [req.body.tagOptions] , (error, results) => {
+          if (error) throw error;
+          pool.query('SELECT MAX(tag_id) AS max_tag_id FROM tags', function(err, results) {
+            var max_tag = results[0].max_tag_id;
+            pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
+              if (error) throw error;
+            });
+          });
+        });
+      }
+      else {
+        for (var i = 0; i < req.body.tagOptions.length; i++) {
+          pool.query('INSERT INTO tags (tag_name) VALUES (?)', [req.body.tagOptions[i]] , (error, results) => {
             if (error) throw error;
-            pool.query('SELECT MAX(tag_id) AS max_tag_id FROM projects'), function(err, results) {
-              const max_tag = results[0].max_tag_id;
-              pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
-                if (error) throw error;
-              });
-            };
+          });
+          pool.query('SELECT MAX(tag_id) AS max_tag_id FROM tags', function(err, results) {
+            var max_tag = results[0].max_tag_id;
+            pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
+              if (error) throw error;
+            });
           });
         }
-        else {
-          for (var i = 0; i < req.body.tagOptions.length; i++) {
-            pool.query('INSERT INTO tags (tag_name) VALUES (?, ?)', [req.body.tagOptions[i]] , (error, results) => {
-              if (error) throw error;
-              pool.query('SELECT MAX(tag_id) AS max_tag_id FROM projects'), function(err, results) {
-                const max_tag = results[0].max_tag_id;
-                pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
-                  if (error) throw error;
-                });
-              };
-            });
-          }
-        }
       }
-    };
-    res.redirect('/landing');  
+    }
   });
+  res.redirect('/landing');
 });
 
 app.listen(3000, () => {
