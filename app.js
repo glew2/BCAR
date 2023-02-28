@@ -108,21 +108,22 @@ app.post('/add_project', (req, res) => {
     if (error) {
       return res.status(500).send(error);
     }
-    res.redirect('/landing');  
+    res.redirect('/landing');
   });
 });
 
-app.post('/add_user', (user, res) => {
+app.post('/add_user', (req, res) => {
   var count;
   pool.query('SELECT COUNT(*) FROM users', function(err, results) {
     if (err) throw err;
-    count = results +1;
+    count = results[0]['COUNT(*)'] + 1;
   });
-  pool.query('INSERT INTO users (user_id, first_name, last_name, email, account_type) VALUES (?, ?, ?, ?, ?)', [count, req.oidc.user.given_name, req.oidc.user.family_name, req.oidc.user.email, 'student'], (error, results) => {
+  pool.query('INSERT INTO users (first_name, last_name, email, account_type, user_token_auth0) VALUES (?, ?, ?, ?, ?)', [req.oidc.user.given_name, req.oidc.user.family_name, req.oidc.user.email, 'student', 1], (error, results) => {
     if (error) {
       return res.status(500).send(error);
     }
-  })
+    res.redirect('/login')
+  });
 });
 
 app.listen(3000, () => {

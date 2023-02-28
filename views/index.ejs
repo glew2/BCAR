@@ -1,39 +1,27 @@
 <!doctype html>
-    <html>
+  <html>
     <head>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" />
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script type="text/javascript" src="/app.js"></script>
+        
         <title>Index Page</title>
     </head>
     <body>
-      <form id="user" class="needs-validation" action="/add_user" method="post" novalidate method="get">
-      <ul>
-        <% if(!isAuthenticated) { %>
-        <li><button href="/login/" id="login-button">Login</button></li>
-        <% } else { %>
-        <li><a href="/logout/">Logout</a></li>
-        <% } %>
-      </ul>
+      <form method="post" action="/add_user">
+      <% if(!isAuthenticated) { %>
+      <button href="/login/" id="login-button">Login</button>
+      <% } else { %>
+      <button href="/logout/">Logout</button>
+      <% } %>
       </form>
 
       <h1>Welcome to BCA Research Hub</h1>
-      <pre><%= JSON.stringify(user,null,2) %></pre>
       
     </body>
-    <script>
-      const loginButton = document.getElementById('login-button');
-      loginButton.addEventListener('click', () => {
-        var count;
-        pool.query('SELECT COUNT(*) FROM users', function(err, results) {
-          if (err) throw err;
-          count = results +1;
-        });
-        pool.query('INSERT INTO users (user_id, first_name, last_name, email, account_type, user_token_auth0) VALUES (?, ?, ?, ?, ?, ?)', [count, user.given_name, user.family_name, user.email, 'student', 1], (error, results) => {
-          if (error) {
-            return res.status(500).send(error);
-          }
-        });
-      });
 
-
-    </script>
-    </html>
+  </html>
