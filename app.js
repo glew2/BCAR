@@ -2,7 +2,11 @@ const express = require('express');
 const auth0 = require('auth0');
 const path = require('path');
 const mysql = require('mysql');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+
+const fs = require('fs');
+const multer = require('multer');
+const upload = multer({ dest: './temp/' });
 
 const app = express();
 
@@ -56,7 +60,7 @@ app.get('/data_display', (req, res) => {
   });
 });
 
-app.post('/add_project', (req, res) => {
+app.post('/add_project', upload.single('researchPaper'), (req, res) => {
   // var project_count;
   // var tag_count;
   // var project_count = pool. ('SELECT COUNT(*) FROM projects'); 
@@ -112,7 +116,13 @@ app.post('/add_project', (req, res) => {
   //     });
   //   });
   // });
-  pool.query('INSERT INTO projects (student_id, title, abstract, research_paper, teacher_id, teacher_email) VALUES (?, ?, ?, ?, ?, ?)', [1, req.body.projectTitle, req.body.Abstract, req.body.researchPaper, 1, req.body.teacherSelection], (error, results) => {
+  const pdfFile = req.file;
+  var pdfData;
+  if (pdfFile) {
+    pdfData = fs.readFileSync(pdfFile.path).toString('base64');
+  }
+
+  pool.query('INSERT INTO projects (student_id, title, abstract, research_paper, teacher_id, teacher_email) VALUES (?, ?, ?, ?, ?, ?)', [1, req.body.projectTitle, req.body.Abstract, pdfData, 1, req.body.teacherSelection], (error, results) => {
     if (error) {
       return res.status(500).send(error);
     }  
@@ -128,11 +138,11 @@ app.post('/add_project', (req, res) => {
       if (typeof req.body.tagOptions == 'string') {
         pool.query('INSERT INTO tags (tag_name) VALUES (?)', [req.body.tagOptions] , (error, results) => {
           if (error) throw error;
-          pool.query('SELECT MAX(tag_id) AS max_tag_id FROM tags', function(err, results) {
-            var max_tag = results[0].max_tag_id;
-            pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
-              if (error) throw error;
-            });
+        });
+        pool.query('SELECT MAX(tag_id) AS max_tag_id FROM tags', function(err, results) {
+          var max_tag = results[0].max_tag_id;
+          pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
+            if (error) throw error;
           });
         });
       }
@@ -142,11 +152,11 @@ app.post('/add_project', (req, res) => {
             if (error) throw error;
           });
           pool.query('SELECT MAX(tag_id) AS max_tag_id FROM tags', function(err, results) {
-            var max_tag = results[0].max_tag_id;
-            pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
-              if (error) throw error;
+              var max_tag = results[0].max_tag_id;
+              pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
+                if (error) throw error;
+              });
             });
-          });
         }
       }
     }
