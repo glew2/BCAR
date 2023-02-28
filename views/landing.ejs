@@ -5,9 +5,14 @@
         <title>Landing Page</title>
     </head>
     <body>
+      <nav>
       <h1>Redirect successful</h1>
       <button id="test-button" class="btn btn-primary">Test</button>
-      <button id="logout-button" class="btn btn-primary" method="GET" action="/logout">Log out</button>
+      <button id="logout-button" class="btn btn-primary">Log out</button>
+      </nav>
+
+      <pre><%= JSON.stringify(user,null,2) %></pre>
+
       <script>
         var webAuth = new auth0.WebAuth({
           domain: 'dev-k7faluteobqev1a0.us.auth0.com',
@@ -25,3 +30,5 @@
           })
         });
       </script>
+    </body>
+</html>
