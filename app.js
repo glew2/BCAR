@@ -3,7 +3,6 @@ const auth0 = require('auth0');
 const path = require('path');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
-var indexRouter = require('./routes/index.js');
 const { auth } = require('express-openid-connect');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -29,10 +28,8 @@ passport.use(new LocalStrategy(
   }
 ));
 
+const app = express();
 
-var app = express();
-app.set("views", "views");
-app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(express.static("public"));
@@ -48,13 +45,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.get('/', (req, res) => {
     res.redirect(req.oidc.isAuthenticated() ? '/landing' : '/index');
 });
-// change above redirect
 
 app.post('/login', passport.authenticate('local', {successRedirect: '/landing', failureRedirect: '/index', failureFlash: true}));
 
 app.get('/index', (req, res) => {
   const isAuthenticated = req.isAuthenticated();
-  const user = req.user;
+  const user = req.oidc.user;
   res.render('index', { isAuthenticated, user: req.oidc.user });
 });
 
