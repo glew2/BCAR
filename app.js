@@ -20,9 +20,9 @@ app.get('/login', (req, res) => {
   res.render('login');
 });
 
-// app.get('/logout', (req, res) => {
-//      res.sendFile(path.join(__dirname, '/login'));
-// });
+app.get('/logout', (req, res) => {
+  res.render('login');
+});
 
 app.get('/callback', (req, res) => {
   res.redirect('/landing');
@@ -48,7 +48,17 @@ const pool = mysql.createPool({
 });
 
 app.get('/data_display', (req, res) => {
-  pool.query('SELECT * FROM projects JOIN students ON projects.student_id=students.student_id JOIN users ON students.user_id=users.user_id;', (error, results) => {
+
+  // make this able to split/tokenize the input and run the query with all the inputs 
+  const search_input = req.query.search;
+  
+  let sqlQuery = 'SELECT * FROM projects JOIN students ON projects.student_id=students.student_id JOIN users ON students.user_id=users.user_id';
+  if (search_input) {
+    // Query to be edited further
+    // Student/Teacher Name, assays, etc. should be added in future edits
+    sqlQuery += ` WHERE title LIKE "%${search_input}%" OR abstract LIKE "%${search_input}%" OR tags LIKE "%${search_input}%";`;
+  }
+  pool.query(sqlQuery, (error, results) => {
     if (error) {
       return res.send(error.message);
     }
