@@ -83,15 +83,27 @@ const pool = mysql.createPool({
 
 app.get('/data_display', (req, res) => {
 
-  // make this able to split/tokenize the input and run the query with all the inputs 
+  // TODO make this able to split/tokenize the input and run the query with all the inputs 
   const search_input = req.query.search;
-  
-  let sqlQuery = 'SELECT * FROM projects JOIN students ON projects.student_id=students.student_id JOIN users ON students.user_id=users.user_id';
+  let sqlQuery = `
+             SELECT p.*, GROUP_CONCAT(t.tag_name SEPARATOR ', ') AS tag_names, u.first_name, u.last_name
+             FROM projects p
+             LEFT JOIN project_tag_xref x 
+              ON p.project_id = x.project_id
+             LEFT JOIN tags t 
+              ON x.tag_id = t.tag_id
+             JOIN students s ON p.student_id = s.student_id
+             JOIN users u ON s.user_id = u.user_id
+  `
   if (search_input) {
-    // Query to be edited further
     // Student/Teacher Name, assays, etc. should be added in future edits
-    sqlQuery += ` WHERE title LIKE "%${search_input}%" OR abstract LIKE "%${search_input}%" OR tags LIKE "%${search_input}%";`;
+    sqlQuery += ` 
+              WHERE p.title LIKE '%${search_input}%'
+                OR p.abstract LIKE '%${search_input}%'
+                OR t.tag_name LIKE '%${search_input}%'`;
   }
+  sqlQuery+=` GROUP BY p.project_id`;
+
   pool.query(sqlQuery, (error, results) => {
     if (error) {
       return res.send(error.message);
@@ -172,13 +184,14 @@ app.post('/add_project', (req, res) => {
       if (typeof req.body.tagOptions == 'string') {
         pool.query('INSERT INTO tags (tag_name) VALUES (?)', [req.body.tagOptions] , (error, results) => {
           if (error) throw error;
-          pool.query('SELECT MAX(tag_id) AS max_tag_id FROM tags', function(err, results) {
+        });
+        pool.query('SELECT MAX(tag_id) AS max_tag_id FROM tags', function(err, results) {
             var max_tag = results[0].max_tag_id;
             pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
               if (error) throw error;
             });
-          });
         });
+
       }
       else {
         for (var i = 0; i < req.body.tagOptions.length; i++) {
