@@ -5,16 +5,30 @@
         <title>Landing Page</title>
     </head>
     <body>
+      <nav>
       <h1>Redirect successful</h1>
-      <button id="test-button" class="btn btn-primary">Test</button>
+      <button id="test-button" href="/data_display" class="btn btn-primary">Test</button>
       <button id="logout-button" class="btn btn-primary">Log out</button>
+      </nav>
+
+      <pre><%= JSON.stringify(user,null,2) %></pre>
+
       <script>
+        var webAuth = new auth0.WebAuth({
+          domain: 'dev-k7faluteobqev1a0.us.auth0.com',
+          clientID: 'WJJFBtnRYl7hXuXADR5uP48Hng1Z9Zdt',
+          redirectUri: 'http://localhost:3000/callback',
+          responseType: 'code',
+          scope: 'openid profile'
+        });
         document.getElementById('test-button').addEventListener('click', ()=> {
           window.location.href='/data_display';
         });
-        document.getElementById('logout-button').addEventListener('click', function() {
+        document.getElementById('logout-button').addEventListener('click', ()=> {
           webAuth.logout({
             returnTo: 'http://localhost:3000/login'
-          });
+          })
         });
       </script>
+    </body>
+</html>
