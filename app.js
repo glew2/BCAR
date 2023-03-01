@@ -197,16 +197,11 @@ app.post('/add_project', upload.single('researchPaper'), (req, res) => {
           if (error) throw error;
         });
         pool.query('SELECT MAX(tag_id) AS max_tag_id FROM tags', function(err, results) {
-            var max_tag = results[0].max_tag_id;
-            pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
-              if (error) throw error;
-            });
           var max_tag = results[0].max_tag_id;
           pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [max_tag, max_project], (error, results) => {
             if (error) throw error;
           });
         });
-
       }
       else {
         for (var i = 0; i < req.body.tagOptions.length; i++) {
