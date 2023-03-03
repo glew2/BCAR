@@ -1,9 +1,10 @@
 const mysql = require('mysql');
+const dotenv = require('dotenv');
 
 var connection = mysql.createConnection({
-	host : 'soccerdb.calingaiy4id.us-east-2.rds.amazonaws.com',
-	user : 'ale_lew_mus',
-	password : 'QS7FhtcdeLbm'
+	host : dotenv.DBHOST,
+	user : dotenv.DBUSERNAME,
+	password : dotenv.DBPASSWORD
 });
 
 connection.connect(function(error){
