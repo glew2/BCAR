@@ -11,6 +11,9 @@
         <script type="text/javascript" src="/app.js"></script>
 
     </head>
+
+    <% if(isAuthenticated) { %>
+
     <header>
         <nav class="navbar navbar-light" style="background-color: #007bff;">
             <a class="navbar-brand mt-5" href="landing" style="position:fixed; margin-left:auto;">
@@ -90,6 +93,7 @@
                     <input type="submit" name="Submit" class="btn btn-primary" id="Submit" value="Submit">
                 </div>
             </form>
+
             <script>
                 $.ajax({
                 type: "POST",
@@ -132,4 +136,30 @@
 
         </div>
     </body>
+
+    <% } else { %>
+        <div class="auth-login-container">
+            <p>Please log in to access this page.</p>
+            <button onclick="location.href='/index'" class="btn btn-primary">Login</button>
+        </div>
+    <% } %>
+
+    <style>
+        p {
+          font-size: 20px;
+        }
+        button {
+          font-size: 20px;
+          size: 2cap;
+        }
+        .auth-login-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          text-align: center;
+          align-items: center;
+          height: 100vh;
+        }
+    </style>
+
 </html>
