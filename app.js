@@ -2,6 +2,7 @@ const express = require('express');
 const auth0 = require('auth0');
 const path = require('path');
 const mysql = require('mysql');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const fs = require('fs');
@@ -40,6 +41,7 @@ app.use(express.urlencoded({ extended: true}));
 app.use(express.static("public"));
 app.use(auth(config));
 app.use(passport.initialize());
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
@@ -114,6 +116,28 @@ app.get('/data_display', (req, res) => {
       return res.send(error.message);
     }
     res.render('data_display', { projects: results });
+  });
+
+  // QUERY FOR STUDENT ID;
+});
+
+app.get('/pdf', (req, res) => {
+  pool.query('SELECT research_paper FROM projects WHERE project_id = 118', (error, results, fields) => {
+    if (error) throw error;
+
+    if (results.length > 0) {
+      const pdfData = results[0].research_paper;
+
+      // Create a Blob object from the PDF data
+      const pdfBuffer = Buffer.from(pdfData, 'binary');
+
+      // Set the Content-Type header to application/pdf
+      res.setHeader('Content-Type', 'application/pdf');
+      // Send the Blob object as the response
+      res.status(200).send(pdfBuffer);
+    } else {
+      res.status(404).send('PDF data not found');
+    }
   });
 });
 
@@ -221,6 +245,7 @@ app.post('/add_project', upload.single('researchPaper'), (req, res) => {
   });
   
 });
+
 
 app.post('/add_user', (req, res) => {
   var count;
