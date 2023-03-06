@@ -42,7 +42,23 @@
                             <% } else { %>
                             <% } %>
                         </p>
-                        <a href="#" class="btn btn-primary" style="width:20%">Download Paper</a>
+                        <button onclick="downloadPDF()" class="btn btn-primary" style="width:20%">Download Paper</button>
+                        <script>
+                            function downloadPDF() {
+                                fetch('/pdf')
+                                .then(response => response.blob())
+                                .then(pdfBuffer => {
+                                    const url = URL.createObjectURL(pdfBuffer);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = 'myfile.pdf';
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                })
+                                .catch(error => console.error(error));
+                            }
+                        </script>        
                 </div>
             <% }); %>
         <% }; %>
