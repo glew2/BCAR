@@ -116,61 +116,6 @@ app.get('/data_display', (req, res) => {
 });
 
 app.post('/add_project', upload.single('researchPaper'), (req, res) => {
-  // var project_count;
-  // var tag_count;
-  // var project_count = pool. ('SELECT COUNT(*) FROM projects'); 
-  // pool.query('SELECT COUNT(*) FROM projects', function(err, results) {
-  //   if (err) console.log('ERROR');
-  //   console.log("RESULTS: " + results[0]['COUNT(*)']);
-  //   project_count = parseInt(results[0]["COUNT(*)"]) + 1;
-  //   console.log("PROJECT COUNT: " + project_count);
-  //   pool.query('SELECT COUNT(*) FROM tags', function(err, results) {
-  //     if (err) console.log('ERROR');
-  //     console.log("RESULTS: " + results[0]['COUNT(*)']);
-  //     tag_count = parseInt(results[0]["COUNT(*)"]) + 1;
-  //     console.log("TAG COUNT: " + tag_count);
-  //     var result = "";
-  //     if (!(typeof req.body.tagOptions === undefined)) {
-  //       console.log("TYPE OF: " + typeof(req.body.tagOptions));
-  //       console.log("TAG OPTIONS: " + req.body.tagOptions);
-  //       if (typeof req.body.tagOptions == 'string') {
-  //         pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [tag_count, project_count], (error, results) => {
-  //           if (error) throw error;
-  //         });
-          
-  //         pool.query('INSERT INTO tags (tag_id, tag_name) VALUES (?, ?)', [tag_count, req.body.tagOptions] , (error, results) => {
-  //           if (error) throw error;
-  //         });
-  //       }
-  //       else {
-  //         for (var i = 0; i < req.body.tagOptions.length; i++) {
-  //           pool.query('INSERT INTO project_tag_xref (tag_id, project_id) VALUES (?, ?)', [tag_count, project_count], (error, results) => {
-  //             if (error) throw error;
-  //           });
-            
-  //           pool.query('INSERT INTO tags (tag_id, tag_name) VALUES (?, ?)', [tag_count, req.body.tagOptions[i]] , (error, results) => {
-  //             if (error) throw error;
-  //           });
-  //           tag_count = tag_count + 1;
-
-  //           // result = result + req.body.tagOptions[i] + ", ";  
-  //         // }
-  //         // if (result.length > 0) { 
-  //         //   result = result.substr(0, result.length - 2);
-  //         }
-  //       }
-  //     }
-  //     // console.log(req.body.tagOptions[0]);
-  //     // var project_count = pool.query('SELECT COUNT(*) FROM projects'); 
-  //     // console.log(project_count);
-  //     pool.query('INSERT INTO projects (student_id, title, abstract, research_paper, teacher_id, teacher_email) VALUES (?, ?, ?, ?, ?, ?)', [1, req.body.projectTitle, req.body.Abstract, req.body.researchPaper, 1, req.body.teacherSelection], (error, results) => {
-  //       if (error) {
-  //         return res.status(500).send(error);
-  //       }
-  //       res.redirect('/landing');  
-  //     });
-  //   });
-  // });
   const pdfFile = req.file;
   var pdfData;
   if (pdfFile) {
