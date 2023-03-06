@@ -12,9 +12,9 @@
         <title>Index Page</title>
     </head>
     <body>
-      <form method="post" action="/add_user">
+      <form action="/add_user" method="post">
       <% if(!isAuthenticated) { %>
-      <button href="/login/" id="login-button">Login</button>
+      <button href="/login" id="login-button">Login</button>
       <% } else { %>
       <button href="/logout/">Logout</button>
       <% } %>
