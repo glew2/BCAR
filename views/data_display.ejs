@@ -6,7 +6,11 @@
         <title>Project List</title>
     </head>
     <header>
-        <nav class="navbar navbar-expand-lg fixed-top navbar-scroll">
+        <nav class="navbar navbar-light" style="background-color: #007bff;">
+            <a class="navbar-brand mt-5" href="landing" style="position:fixed; margin-left:auto;">
+                <img src="<%= user.picture %>" width="30" height="30" class="d-inline-block align-top rounded-circle" alt="">
+                <%= user.given_name %> <%= user.family_name %>
+            </a>
         </nav>
         <h1 class="mt-5 mb-4" style="text-align:center">Previous Projects</h1>
     </header>
@@ -17,6 +21,7 @@
                 <i class="fas fa-search"></i>
             </button>
             <button type="button" class="btn btn-secondary" onclick="location.href='/data_display'">Reset Results</button>
+            <button type="button" class="btn btn-outline-primary" onclick="location.href='/project_upload'"> + Create New Project</button>
         </form>
         <% if (projects.length<=0) { %>
             <h4 class="d-flex justify-content-center mt-5" style="color:#525252">No results, press "Reset Results" to refresh the list of projects.</h3>
@@ -27,13 +32,14 @@
                     <h5 class="card-subtitle mb-2">by <%= project.first_name %> <%= project.last_name %></h5>
                         <h6>Project Abstract:</h6>
                         <p class="card-text"><%= project.abstract %></p>
-                        <p class="card-text">Tags:
+                        <p class="card-text border" style="color:#3c5360">Teacher Email: <%= project.teacher_email %></h6>
+                        <p class="card-text">
                             <% if (project.tag_names!==null) { %>
+                                Tags:
                               <% project.tag_names.trim().split(',').forEach(function(tag) { %>
                                 <span class="badge badge-pill badge-primary mb-1" id="tag-badge"><%= tag %></span>
                               <% }); %>
                             <% } else { %>
-                              No tags found.
                             <% } %>
                         </p>
                         <button onclick="downloadPDF()" class="btn btn-primary" style="width:20%">Download Paper</button>
