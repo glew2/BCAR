@@ -8,9 +8,11 @@ const fs = require('fs');
 const multer = require('multer');
 const upload = multer({ dest: './temp/' });
 
-const { auth } = require('express-openid-connect');
+const { auth, requiresAuth } = require('express-openid-connect');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
+const flash = require('connect-flash');
+const session = require('express-session');
+const Auth0Strategy = require('passport-auth0');
 require('dotenv').config();
 
 const config = {
@@ -22,27 +24,30 @@ const config = {
   issuerBaseURL: process.env.ISSUER
 }
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      if (!user.verifyPassword(password)) { return done(null, false); }
-      return done(null, user);
-    });
-  }
-));
+const pool = mysql.createPool({
+  host: 'soccerdb.calingaiy4id.us-east-2.rds.amazonaws.com',
+  user: 'ale_lew_mus',
+  password: 'QS7FhtcdeLbm',
+  database: 'capstone_2223_bcareshub'
+});
 
 const app = express();
+const authMiddleware = requiresAuth();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true}));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
 app.use(auth(config));
-app.use(passport.initialize());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
+
+// app.use(flash());
+// app.use(session({
+//   secret: 'tlb5enXf0s_7nh3inQRFARXGycH-58w3Z828_knp5zwLRb4ZEXBF1CbaH0iKGTAL',
+//   resave: false,
+//   saveUninitialized: false
+// }));
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'));
@@ -51,16 +56,14 @@ app.get('/', (req, res) => {
     res.redirect(req.oidc.isAuthenticated() ? '/landing' : '/index');
 });
 
-app.post('/login', passport.authenticate('local', {successRedirect: '/landing', failureRedirect: '/index', failureFlash: true}));
-
 app.get('/index', (req, res) => {
-  const isAuthenticated = req.isAuthenticated();
+  const isAuthenticated = req.isAuthenticated;
   const user = req.oidc.user;
   res.render('index', { isAuthenticated, user: req.oidc.user });
 });
 
 app.get('/logout', (req, res) => {
-  res.render('login');
+  res.render('login', { isAuthenticated, user: req.oidc.user});
 });
 
 app.get('/callback', (req, res) => {
@@ -68,7 +71,9 @@ app.get('/callback', (req, res) => {
 });
 
 app.get('/landing', (req, res) => {
-  res.render('landing', {user: req.oidc.user});
+  const isAuthenticated = req.isAuthenticated;
+  const user = req.oidc.user;
+  res.render('landing', { isAuthenticated, user: req.oidc.user});
 });
 
 app.get('/project_upload', (req, res) => {
@@ -78,13 +83,6 @@ app.get('/project_upload', (req, res) => {
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
-
-const pool = mysql.createPool({
-  host: 'soccerdb.calingaiy4id.us-east-2.rds.amazonaws.com',
-  user: 'ale_lew_mus',
-  password: 'QS7FhtcdeLbm',
-  database: 'capstone_2223_bcareshub'
-});
 
 app.get('/data_display', (req, res) => {
 
@@ -169,17 +167,25 @@ app.post('/add_project', upload.single('researchPaper'), (req, res) => {
   
 });
 
-app.post('/add_user', (req, res) => {
-  var count;
-  pool.query('SELECT COUNT(*) FROM users', function(err, results) {
+app.get('/login', passport.authenticate('local', {
+  successRedirect: '/landing', 
+  failureRedirect: '/index',
+  failureFlash: false
+}));
+
+app.post('/add_user', authMiddleware, (req, res) => {
+  pool.query('SELECT * FROM users WHERE email = ?', [req.oidc.user.email], function(err, results) {
     if (err) throw err;
-    count = results[0]['COUNT(*)'] + 1;
-  });
-  pool.query('INSERT INTO users (first_name, last_name, email, account_type, user_token_auth0) VALUES (?, ?, ?, ?, ?)', [req.oidc.user.given_name, req.oidc.user.family_name, req.oidc.user.email, 'student', 1], (error, results) => {
-    if (error) {
-      return res.status(500).send(error);
+
+    if (results.length > 0) {
+      return res.redirect('/login');
     }
-    res.redirect('/login')
+    pool.query('INSERT INTO users (first_name, last_name, email, account_type) VALUES (?, ?, ?, ?)', [req.oidc.user.given_name, req.oidc.user.family_name, req.oidc.user.email, 'student'], (error, results) => {
+      if (error) {
+        return res.status(500).send(error);
+      }
+      res.redirect('/login');
+    });
   });
 });
 
