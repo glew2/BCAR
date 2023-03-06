@@ -5,6 +5,9 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc" crossorigin="anonymous">
         <title>Project List</title>
     </head>
+
+    <% if(isAuthenticated) { %>
+
     <header>
         <nav class="navbar navbar-light" style="background-color: #007bff;">
             <a class="navbar-brand mt-5" href="landing" style="position:fixed; margin-left:auto;">
@@ -46,17 +49,42 @@
                 </div>
             <% }); %>
         <% }; %>
-        <style>
-            #tag-badge {
-                color: #fff;
-                background-color: #007bff;
-                padding: 0.25em 0.4em;
-                font-size: 75%;
-                font-weight: 700;
-                text-align: center;
-                border-radius: 0.5rem;
-                width:fit-content;
-            }
-        </style>
+    
     </body>
+
+    <% } else { %>
+        <div class="auth-login-container">
+            <p>Please log in to access this page.</p>
+            <button onclick="location.href='/index'" class="btn btn-primary">Login</button>
+        </div>
+    <% } %>
+
+    <style>
+        p {
+          font-size: 20px;
+        }
+        button {
+          font-size: 20px;
+          size: 2cap;
+        }
+        #tag-badge {
+            color: #fff;
+            background-color: #007bff;
+            padding: 0.25em 0.4em;
+            font-size: 75%;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 0.5rem;
+            width:fit-content;
+        }
+        .auth-login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            align-items: center;
+            height: 100vh;
+        }
+    </style>
+
 </html>

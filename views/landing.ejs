@@ -5,6 +5,8 @@
         <title>Landing Page</title>
     </head>
     <body>
+      <% if(isAuthenticated) { %>
+          
       <nav>
       <h1>User Profile:</h1>
       <button id="test-button" href="/data_display" class="btn btn-primary">Test</button>
@@ -12,6 +14,13 @@
       </nav>
 
       <pre><%= JSON.stringify(user,null,2) %></pre>
+
+      <% } else { %>
+        <div class="auth-login-container">
+          <p>Please log in to access this page.</p>
+          <button onclick="location.href='/index'" class="btn btn-primary">Login</button>
+        </div>
+      <% } %>
 
       <script>
         // var webAuth = new auth0.WebAuth({
@@ -21,8 +30,8 @@
         //   responseType: 'code',
         //   scope: 'openid profile'
         // });
-        document.getElementById('test-button').addEventListener('click', ()=> {
-          window.location.href='/data_display';
+        document.getElementById('test-button').addEventListener('click', () => {
+          window.location.href = '/data_display';
         });
         // document.getElementById('logout-button').addEventListener('click', ()=> {
         //   webAuth.logout({
@@ -30,5 +39,24 @@
         //   })
         // });
       </script>
+
+      <style>
+        p {
+          font-size: 20px;
+        }
+        button {
+          font-size: 20px;
+          size: 2cap;
+        }
+        .auth-login-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          text-align: center;
+          align-items: center;
+          height: 100vh;
+        }
+      </style>
+
     </body>
 </html>

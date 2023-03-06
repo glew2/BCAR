@@ -12,16 +12,36 @@
         <title>Index Page</title>
     </head>
     <body>
-      <form action="/add_user" method="post">
-      <% if(!isAuthenticated) { %>
-      <button href="/login" id="login-button">Login</button>
-      <% } else { %>
-      <button href="/logout/">Logout</button>
-      <% } %>
-      </form>
+      <div class="container">
+        <h1>Welcome to the BCA Research Hub!</h1>
 
-      <h1>Welcome to BCA Research Hub</h1>
-      
+        <% if(!isAuthenticated) { %>
+        <form action="/add_user" method="post">
+        <button href="/login" id="login-button" class="btn btn-primary">Login</button>
+        </form>
+
+        <% } else { %>
+        <button onclick="location.href='/logout'" class="btn btn-primary">Logout</button>
+        <% } %>
+      </div>
     </body>
+
+    <style>
+      p {
+          font-size: 20px;
+      }
+      button {
+        font-size: 20px;
+        size: 2cap;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+        height: 100vh;
+      }
+    </style>
 
   </html>

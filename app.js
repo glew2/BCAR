@@ -57,13 +57,16 @@ app.get('/', (req, res) => {
 });
 
 app.get('/index', (req, res) => {
-  const isAuthenticated = req.isAuthenticated;
+  const isAuthenticated = req.oidc.isAuthenticated();
   const user = req.oidc.user;
   res.render('index', { isAuthenticated, user: req.oidc.user });
 });
 
 app.get('/logout', (req, res) => {
-  res.render('login', { isAuthenticated, user: req.oidc.user});
+  const isAuthenticated = req.oidc.isAuthenticated();
+  const user = req.oidc.user;
+
+  res.render('logout', { isAuthenticated, user: req.oidc.user});
 });
 
 app.get('/callback', (req, res) => {
@@ -71,13 +74,15 @@ app.get('/callback', (req, res) => {
 });
 
 app.get('/landing', (req, res) => {
-  const isAuthenticated = req.isAuthenticated;
+  const isAuthenticated = req.oidc.isAuthenticated();
   const user = req.oidc.user;
+  console.log('isAuthenticated:', isAuthenticated);
   res.render('landing', { isAuthenticated, user: req.oidc.user});
 });
 
 app.get('/project_upload', (req, res) => {
-  res.render('project_upload', {user: req.oidc.user});
+  const isAuthenticated = req.oidc.isAuthenticated();
+  res.render('project_upload', { isAuthenticated, user: req.oidc.user });
 });
 
 app.set("views", path.join(__dirname, "views"));
@@ -85,7 +90,7 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get('/data_display', (req, res) => {
-
+  const isAuthenticated = req.oidc.isAuthenticated();
   // TODO make this able to split/tokenize the input and run the query with all the inputs 
   const search_input = req.query.search;
   let sqlQuery = `
@@ -113,7 +118,7 @@ app.get('/data_display', (req, res) => {
     if (error) {
       return res.send(error.message);
     }
-    res.render('data_display', { projects: results, user: req.oidc.user });
+    res.render('data_display', { isAuthenticated, projects: results, user: req.oidc.user });
   });
 });
 
