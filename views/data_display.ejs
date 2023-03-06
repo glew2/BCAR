@@ -20,39 +20,36 @@
         </form>
         <% if (projects.length<=0) { %>
             <h4 class="d-flex justify-content-center mt-5" style="color:#525252">No results, press "Reset Results" to refresh the list of projects.</h3>
-        <% } else { %>
+        <% } else { %>        
             <% projects.forEach(function(project) { %>
                 <div class="card mt-4 p-3" style="width:60%; margin:auto">
                     <h4 class="card-title"><%= project.title %></h4>
-                    <h5 class="card-subtitle mb-3">by <%= project.first_name %> <%= project.last_name %></h5>
+                    <h5 class="card-subtitle mb-2">by <%= project.first_name %> <%= project.last_name %></h5>
                         <h6>Project Abstract:</h6>
                         <p class="card-text"><%= project.abstract %></p>
+                        <p class="card-text">Tags:
+                            <% if (project.tag_names!==null) { %>
+                              <% project.tag_names.trim().split(',').forEach(function(tag) { %>
+                                <span class="badge badge-pill badge-primary mb-1" id="tag-badge"><%= tag %></span>
+                              <% }); %>
+                            <% } else { %>
+                              No tags found.
+                            <% } %>
+                        </p>
                         <a href="#" class="btn btn-primary" style="width:20%">Download Paper</a>
                 </div>
             <% }); %>
-        <% } %>
+        <% }; %>
         <style>
-            /* Color of the links BEFORE scroll */
-            .navbar-scroll .nav-link,
-            .navbar-scroll .navbar-toggler .fa-bars {
-            color: rgb(0, 0, 0);
-            }
-
-            /* Color of the links AFTER scroll */
-            .navbar-scrolled .nav-link,
-            .navbar-scrolled .navbar-toggler .fa-bars {
-            color: #ffffff;
-            }
-
-            /* Color of the navbar AFTER scroll */
-            .navbar-scrolled {
-            background-color: rgb(247, 247, 247);
-            }
-
-            /* An optional height of the navbar AFTER scroll */
-            .navbar.navbar-scroll.navbar-scrolled {
-            padding-top: 5px;
-            padding-bottom: 5px;
+            #tag-badge {
+                color: #fff;
+                background-color: #007bff;
+                padding: 0.25em 0.4em;
+                font-size: 75%;
+                font-weight: 700;
+                text-align: center;
+                border-radius: 0.5rem;
+                width:fit-content;
             }
         </style>
     </body>
