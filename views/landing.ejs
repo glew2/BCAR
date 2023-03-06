@@ -2,16 +2,52 @@
     <html>
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-        <title>Landing Page</title>
+        <title><%= user.given_name %>'s Profile</title>
     </head>
+    <header>
+      <nav class="navbar navbar-light" style="background-color: #007bff;">
+        <a class="navbar-brand mt-5" href="landing" style="position:fixed; margin-left:auto; background-color: #ffffff; border-radius: 7%;">
+            <img src="<%= user.picture %>" width="30" height="30" class="d-inline-block align-top rounded-circle" alt="">
+            <%= user.given_name %> <%= user.family_name %>
+        </a>
+      </nav>
+      <h1 class="mt-4" style="text-align:center">User Profile</h1>
+    </header>
     <body>
       <nav>
-      <h1>User Profile:</h1>
+      
       <button id="test-button" href="/data_display" class="btn btn-primary">Test</button>
       <button id="logout-button" class="btn btn-primary">Log out</button>
       </nav>
-
-      <pre><%= JSON.stringify(user,null,2) %></pre>
+      
+      <!--<pre><%= JSON.stringify(user,null,2) %></pre>!-->
+      <div class="mb-5" style="margin:auto; display:flex; justify-content:center">
+        <h2>Welcome, <%= user.given_name %>.</h2>
+      </div>
+      <% if (projects.length<=0) { %>
+        <h4 class="d-flex justify-content-center mt-5" style="color:#525252">You currently have no projects in the database.</h3>
+        <button class="btn btn-primary" style="margin:auto" onclick="location.href='/project_upload'">Click to Create New Project</button>
+      <% } else { %>      
+        <h3 style="text-align:center">Your Projects:</h3>  
+        <% projects.forEach(function(project) { %>
+            <div class="card mt-4 p-3" style="width:60%; margin:auto">
+                <h4 class="card-header"><%= project.title %></h4>
+                    <h6>Project Abstract:</h6>
+                    <p class="card-text"><%= project.abstract %></p>
+                    <p class="card-text">Teacher Email: <%= project.teacher_email %></h6>
+                    <p class="card-text">
+                        <% if (project.tag_names!==null) { %>
+                            Tags:
+                          <% project.tag_names.trim().split(',').forEach(function(tag) { %>
+                            <span class="badge badge-pill badge-primary mb-1" id="tag-badge"><%= tag %></span>
+                          <% }); %>
+                        <% } else { %>
+                        <% } %>
+                    </p>
+                    <a href="#" class="btn btn-primary" style="width:20%">Download Paper</a>
+            </div>
+        <% }); %>
+    <% }; %>
 
       <script>
         // var webAuth = new auth0.WebAuth({

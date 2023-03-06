@@ -23,7 +23,7 @@
             <button type="button" class="btn btn-secondary" onclick="location.href='/data_display'">Reset Results</button>
             <button type="button" class="btn btn-outline-primary" onclick="location.href='/project_upload'"> + Create New Project</button>
         </form>
-        <% if (projects.length<=0) { %>
+        <% if (projects.length===0) { %>
             <h4 class="d-flex justify-content-center mt-5" style="color:#525252">No results, press "Reset Results" to refresh the list of projects.</h3>
         <% } else { %>        
             <% projects.forEach(function(project) { %>
@@ -32,7 +32,7 @@
                     <h5 class="card-subtitle mb-2">by <%= project.first_name %> <%= project.last_name %></h5>
                         <h6>Project Abstract:</h6>
                         <p class="card-text"><%= project.abstract %></p>
-                        <p class="card-text border" style="color:#3c5360">Teacher Email: <%= project.teacher_email %></h6>
+                        <p class="card-text" style="color:#3c5360">Teacher Email: <%= project.teacher_email %></h6>
                         <p class="card-text">
                             <% if (project.tag_names!==null) { %>
                                 Tags:

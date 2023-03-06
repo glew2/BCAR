@@ -73,7 +73,25 @@ app.get('/callback', (req, res) => {
 app.get('/landing', (req, res) => {
   const isAuthenticated = req.isAuthenticated;
   const user = req.oidc.user;
-  res.render('landing', { isAuthenticated, user: req.oidc.user});
+  let user_profile_query = `
+             SELECT p.*, GROUP_CONCAT(t.tag_name SEPARATOR ', ') AS tag_names, u.first_name, u.last_name, u.email
+             FROM projects p
+             LEFT JOIN project_tag_xref x 
+              ON p.project_id = x.project_id
+             LEFT JOIN tags t 
+              ON x.tag_id = t.tag_id
+             JOIN students s ON p.student_id = s.student_id
+             JOIN users u ON s.user_id = u.user_id
+  `
+  user_profile_query+= `WHERE u.email = '` + user.email +`'`;
+  user_profile_query+= `GROUP BY p.project_id`
+  pool.query(user_profile_query, (error, results) => {
+    if (error) {
+      return res.send(error.message);
+    }
+    console.log(results);
+    res.render('landing', { isAuthenticated, projects: results, user: req.oidc.user });
+  });
 });
 
 app.get('/project_upload', (req, res) => {
