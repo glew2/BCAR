@@ -10,6 +10,7 @@
             <img src="<%= user.picture %>" width="30" height="30" class="d-inline-block align-top rounded-circle" alt="">
             <%= user.given_name %> <%= user.family_name %>
         </a>
+        <div class="ms-auto"><a id="prev-projects-link" class="nav-link" style="color:white" href="/data_display">Previous Projects</a></div>
       </nav>
       <h1 class="mt-4" style="text-align:center">User Profile</h1>
     </header>
@@ -17,9 +18,7 @@
       <% if(isAuthenticated) { %>
           
       <nav>
-      
-      <button id="test-button" href="/data_display" class="btn btn-primary">Test</button>
-      <button id="logout-button" class="btn btn-primary">Log out</button>
+      <!--<button id="logout-button" class="btn btn-primary">Log out</button>!-->
       </nav>
       
       <!--<pre><%= JSON.stringify(user,null,2) %></pre>!-->

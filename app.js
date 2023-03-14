@@ -72,31 +72,36 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/callback', (req, res) => {
-  res.redirect('/landing');
+  res.redirect('/index');
 });
 
 app.get('/landing', (req, res) => {
   const isAuthenticated = req.oidc.isAuthenticated();
-  const user = req.oidc.user;
-  console.log('isAuthenticated:', isAuthenticated);
-  let user_projects_query =  `
-    SELECT p.*, GROUP_CONCAT(t.tag_name SEPARATOR ', ') AS tag_names, u.first_name, u.last_name, u.email
-    FROM projects p
-    LEFT JOIN project_tag_xref x 
-    ON p.project_id = x.project_id
-    LEFT JOIN tags t 
-    ON x.tag_id = t.tag_id
-    JOIN students s ON p.student_id = s.student_id
-    JOIN users u ON s.user_id = u.user_id
-  `
-  user_projects_query+=`WHERE u.email='` + user.email + `'`;
-  user_projects_query+=`GROUP BY p.project_id`;
-  pool.query(user_projects_query, (error, results) => {
-    if (error) {
-      return res.send(error.message);
-    }
-    res.render('landing', { isAuthenticated, projects: results, user: req.oidc.user });
-  });
+  if (isAuthenticated) {
+    const user = req.oidc.user;
+    console.log('isAuthenticated:', isAuthenticated);
+    let user_projects_query =  `
+      SELECT p.*, GROUP_CONCAT(t.tag_name SEPARATOR ', ') AS tag_names, u.first_name, u.last_name, u.email
+      FROM projects p
+      LEFT JOIN project_tag_xref x 
+      ON p.project_id = x.project_id
+      LEFT JOIN tags t 
+      ON x.tag_id = t.tag_id
+      JOIN students s ON p.student_id = s.student_id
+      JOIN users u ON s.user_id = u.user_id
+    `
+    user_projects_query+=`WHERE u.email='` + user.email + `'`;
+    user_projects_query+=`GROUP BY p.project_id`;
+    pool.query(user_projects_query, (error, results) => {
+      if (error) {
+        return res.send(error.message);
+      }
+      res.render('landing', { isAuthenticated, projects: results, user: req.oidc.user });
+    });
+  }
+  else {
+    res.render('landing', { isAuthenticated });
+  }
 });
 
 app.get('/project_upload', (req, res) => {
