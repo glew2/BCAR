@@ -219,11 +219,11 @@ app.post('/add_project', upload.single('researchPaper'), (req, res) => {
 });
 
 
-app.get('/login', passport.authenticate('local', {
-  successRedirect: '/landing', 
-  failureRedirect: '/index',
-  failureFlash: false
-}));
+// app.get('/login', passport.authenticate('local', {
+//   successRedirect: '/landing', 
+//   failureRedirect: '/index',
+//   failureFlash: false
+// }));
 
 app.post('/add_user', authMiddleware, (req, res) => {
   pool.query('SELECT * FROM users WHERE email = ?', [req.oidc.user.email], function(err, results) {
