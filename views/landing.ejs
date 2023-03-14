@@ -11,8 +11,8 @@
     <header>
       <nav class="navbar navbar-light" style="background-color: #007bff;">
         <a class="navbar-brand mt-5" href="landing" style="position:fixed; margin-left:auto; background-color: #ffffff; border-radius: 7%;">
-            <img src="<%= user.picture %>" width="30" height="30" class="d-inline-block align-top rounded-circle" alt="">
             <% if(isAuthenticated) { %>
+              <img src="<%= user.picture %>" width="30" height="30" class="d-inline-block align-top rounded-circle" alt="">
               <%= user.given_name %> <%= user.family_name %>
             <% } %>
         </a>
